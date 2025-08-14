@@ -1,11 +1,11 @@
-# 📚 Blog Platform API
+# Blog Platform API
 
 A **Laravel-based RESTful API** for a blogging platform where **admins** can manage content (posts, categories, users) and **users** can interact with posts through likes, comments, replies, and shares.  
 Includes role-based authentication, profile image management, and post image uploads.
 
 ---
 
-## 🚀 Features
+## Features
 
 * User Authentication
 
