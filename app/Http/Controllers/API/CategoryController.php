@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Exception;
@@ -46,11 +47,7 @@ class CategoryController extends Controller
             ]);
 
         } catch(\Exception $e) {
-            return response()->json([
-                'status' => 401,
-                'code' => $e->getCode(),
-                'message' => $e->getMessage()
-            ]);
+            ResponseHelper::setExceptionResponse($e);
         }
     }
 

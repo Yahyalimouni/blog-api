@@ -8,14 +8,27 @@ use App\Http\Controllers\API\PostImageController;
 use App\Http\Controllers\API\ProfileImageController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Middleware\CheckGuard;
-    use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;
+
 
     Route::group(['namespace' => 'App\Http\Controllers\API'], function () {
-        // --------------- Register and Login ----------------//
-        Route::post('register', [AuthenticationController::class, 'register'])->name('register');
-        Route::post('login', [AuthenticationController::class, 'login'])->name('login');
+        // --------------- No Auth ROUTES ----------------//
+
+            /* -------------------------------- AUTHENTICATION ROUTES --------------------------------------- */
+                // -- Register
+                Route::post('register', [AuthenticationController::class, 'register'])->name('register');
+                // -- Login
+                Route::post('login', [AuthenticationController::class, 'login'])->name('login');
+
+            /* -------------------------------- CATEGORIES --------------------------------------- */
+                /* ___ GETS ____ */
+                    // -- Get all categories
+                    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+                    // -- Get a specific category
+                    Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
+
         
-        // --------------------------- ROUTES ----------------------//
+        // --------------------------- Auth ROUTES ----------------------//
         Route::middleware(['auth:sanctum', CheckGuard::class])->group(function () {
             
             // Auth routes
@@ -27,7 +40,7 @@ use App\Http\Middleware\CheckGuard;
 
                 /* ____ GETS _____ */
                     // -- Get all liked comments by the auth user 
-                    // !! This route must be before the aapi Resource to prevent the show method trigger
+                    // !! This route must be before the API Resource to prevent the show method trigger
                     Route::get("/comments/liked", [CommentController::class, 'getLikedCommentsByAuthUser'])->name('comments.liked');
                     
                     // -- Get a comment's replies
@@ -40,7 +53,6 @@ use App\Http\Middleware\CheckGuard;
                     Route::get("/comments/user", [CommentController::class, 'getCommentsForAuthUser'])->name('comments.user');
 
 
-                            
                 /* _____ POSTS _____ */ 
                     // -- Like a comment
                     Route::post("/comments/{comment}/like", [CommentController::class, 'like'])->name('comments.like');
@@ -74,8 +86,8 @@ use App\Http\Middleware\CheckGuard;
                     // -- Get all liked posts by the auth user 
                     // !! This route must be before the api Resource to prevent the show method trigger
                     Route::get("/posts/liked", [PostController::class, 'getLikedPostsByAuthUser'])->name('posts.liked');
-                
 
+                    
                 /* _____ POSTS _____ */
                     // Unlike post
                     Route::post("/posts/{post}/unlike", [PostController::class, 'unlike'])->name('posts.unlike');
@@ -112,13 +124,9 @@ use App\Http\Middleware\CheckGuard;
 
             // ------------------------------------------- CATEGORIES ------------------------------------------------
 
-                Route::apiResource('categories', CategoryController::class)->names([
-                    'index' => 'categories.index',
-                    'show' => 'categories.show',
-                    'store' => 'categories.store',
-                    'update' => 'categories.update',
-                    'destroy' => 'categories.destroy',
-                ]);
+                Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+                Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
+                Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
 
             // ------------------------------------------ POST IMAGES ------------------------------------------------

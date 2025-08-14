@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\DB;
 // Other
 use Illuminate\Validation\Rule;
 use App\Helpers\ResponseHelper;
+use App\Models\Category;
 use App\Models\Comment;
+
 // Models
 use App\Models\Post;
 use App\Models\PostImage;
@@ -23,31 +25,39 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    // Show all posts
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $posts = Post::all();
-
-            if(empty($posts)) {
+            $categoryId = $request->query('category');
+    
+            // Start with base query
+            $query = Post::query();
+    
+            // If category parameter exists and is valid, filter posts
+            if ($categoryId && Category::where('id', $categoryId)->exists()) {
+                $query->where('category_id', $categoryId);
+            }
+    
+            $posts = $query->get();
+    
+            if ($posts->isEmpty()) {
                 return response()->json([
                     'status' => 201,
                     'message' => 'No posts found',
                     'data' => 'Unfound data'
                 ]);
             }
-
+    
             return response()->json([
                 'status' => 200,
                 'message' => "Data fetched successfully",
                 'data' => $posts
             ]);
-
+    
         } catch(\Exception $e) {
             return ResponseHelper::setExceptionResponse($e);
         }
     }
-
 
     // Increment a post's likes
     public function like(Post $post)
